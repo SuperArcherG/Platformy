@@ -28,8 +28,8 @@ xDrift = 1.1
 gravity = 0.2
 Grounded = True
 
-jump = pygame.mixer.Sound("audio/jump.wav")
-land = pygame.mixer.Sound("audio/land.wav")
+jump = pygame.mixer.Sound(os.path.join("audio/jump.wav"))
+land = pygame.mixer.Sound(os.path.join("audio/land.wav"))
 
 # player coordinates
 Px, Py = 0, 0
@@ -37,11 +37,14 @@ Vx, Vy = 0, 0
 Ox, Oy = 0, 0
 # Load the background image here. Make sure the file exists!
 
-Mountains = BG(screenwidth, screenheight, "images/background/BG.png")
-L, R, U, D, N = "images/Player/L.png", "images/Player/R.png", "images/Player/U.png", "images/Player/D.png", "images/Player/N.png"
+Mountains = BG(screenwidth, screenheight,
+               os.path.join("images/background/BG.png"))
+L, R, U, D, N = os.path.join("images/Player/L.png"), os.path.join("images/Player/R.png"), os.path.join(
+    "images/Player/U.png"), os.path.join("images/Player/D.png"), os.path.join("images/Player/N.png")
 Player = Player(L, R, U, D, N, screenwidth, screenheight)
 Floor = Floor(screenwidth, screenheight,
-              "images/tiles/Ground.png", "images/tiles/DirtGround.png")
+              os.path.join("images/tiles/Ground.png"), os.path.join(
+                  "images/tiles/DirtGround.png"))
 pygame.mouse.set_visible(0)
 pygame.display.set_caption('Platformy')
 pressedKeys = pygame.key.get_pressed()
