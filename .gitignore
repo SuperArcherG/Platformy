@@ -11,5 +11,5 @@
 # Built Visual Studio Code Extensions
 *.vsix
 .DS_Store
-build
 Platformy.spec
+build/*
