@@ -9,14 +9,16 @@ import platform
 import urllib.request
 import zipfile
 
-print(platform.system)
-
-if platform.system == "Darwin" and not os.path.exists(os.path.join("assets")):
-    pathToZip = os.path.join("assets.zip")
-    urllib.request.urlretrieve(
-        "https://superarcherg.com/Platformy/assets.zip", pathToZip)
+print(os.name)
+print(platform.system())
+if platform.system() == "Darwin" and not os.path.exists(os.getcwd() + "/assets"):
+    pathToZip = os.getcwd() + "/assets.zip"
+    opener = urllib.request.URLopener()
+    opener.addheader('User-Agent', 'ARCHER_PROD/Platformy')
+    filename, headers = opener.retrieve(
+        "https://server.superarcherg.com/assets", pathToZip)
     with zipfile.ZipFile(pathToZip, 'r') as zip_ref:
-        zip_ref.extractall(os.path.join("assets"))
+        zip_ref.extractall(os.getcwd())
 
 
 pygame.init()  # initialize pygame
@@ -41,8 +43,8 @@ xDrift = 1.1
 gravity = 0.2
 Grounded = True
 
-jump = pygame.mixer.Sound(os.path.join("assets/audio/jump.wav"))
-land = pygame.mixer.Sound(os.path.join("assets/audio/land.wav"))
+jump = pygame.mixer.Sound(os.getcwd() + "/assets/audio/jump.wav")
+land = pygame.mixer.Sound(os.getcwd() + "/assets/audio/land.wav")
 
 # player coordinates
 Px, Py = 0, 0
@@ -50,14 +52,15 @@ Vx, Vy = 0, 0
 Ox, Oy = 0, 0
 # Load the background image here. Make sure the file exists!
 
-Mountains = BG(screenwidth, screenheight,
-               os.path.join("assets/images/background/BG.png"))
-L, R, U, D, N = os.path.join("assets/images/Player/L.png"), os.path.join("assets/images/Player/R.png"), os.path.join(
-    "assets/images/Player/U.png"), os.path.join("assets/images/Player/D.png"), os.path.join("assets/images/Player/N.png")
+Mountains = BG(screenwidth, screenheight, os.getcwd() +
+               "/assets/images/background/BG.png")
+L, R, U, D, N = os.getcwd() + "/assets/images/Player/L.png", os.getcwd() + "/assets/images/Player/R.png",  os.getcwd() + \
+    "/assets/images/Player/U.png", os.getcwd() + "/assets/images/Player/D.png", os.getcwd() + \
+    "/assets/images/Player/N.png"
 Player = Player(L, R, U, D, N, screenwidth, screenheight)
 Floor = Floor(screenwidth, screenheight,
-              os.path.join("assets/images/tiles/Ground.png"), os.path.join(
-                  "assets/images/tiles/DirtGround.png"))
+              os.getcwd() + "/assets/images/tiles/Ground.png",  os.getcwd() +
+              "/assets/images/tiles/DirtGround.png")
 pygame.mouse.set_visible(0)
 pygame.display.set_caption('Platformy')
 pressedKeys = pygame.key.get_pressed()

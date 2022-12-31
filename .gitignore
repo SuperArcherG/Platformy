@@ -16,3 +16,5 @@ build/*
 build/Platformy
 Icon
 dist/assets
+assets.zip
+__MACOSX/assets
