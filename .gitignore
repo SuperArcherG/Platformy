@@ -13,3 +13,4 @@
 .DS_Store
 Platformy.spec
 build/*
+build/Platformy
