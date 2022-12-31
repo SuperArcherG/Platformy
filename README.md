@@ -3,7 +3,7 @@
   In this game, you navigate various puzzles and challenges to reach the end of the level. Platformy isn't as heavily about the platforming as it is the level creation and sharing.
 <img src="https://superarcherg.com/images/PlatformyPromo.png">
 <h2>To install and run this game from the code</h2>
-1. First, <a href="https://www.python.org/downloads/">download the latest version of Python.</a>
+1. First, <a href="https://www.python.org/downloads/">download the latest version of Python.</a><br>
 2. Next, check you have installed it properly by running the following in your terminal:
 
 ```shell
