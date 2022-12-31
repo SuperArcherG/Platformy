@@ -5,6 +5,19 @@ from pygame.locals import *
 from MovingBackground import BG
 from Player import Player
 from Floor import Floor
+import platform
+import urllib.request
+import zipfile
+
+print(platform.system)
+
+if platform.system == "Darwin" and not os.path.exists(os.path.join("assets")):
+    pathToZip = os.path.join("assets.zip")
+    urllib.request.urlretrieve(
+        "https://superarcherg.com/Platformy/assets.zip", pathToZip)
+    with zipfile.ZipFile(pathToZip, 'r') as zip_ref:
+        zip_ref.extractall(os.path.join("assets"))
+
 
 pygame.init()  # initialize pygame
 font = pygame.font.SysFont("Arial", 18)
