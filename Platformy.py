@@ -88,7 +88,7 @@ while True:
             try:
                 shutil.rmtree(os.getcwd() + "/assets")
             except (PermissionError):
-                1
+                0
             sys.exit()
     old = pressedKeys
     pressedKeys = pygame.key.get_pressed()  # checking pressed keys
