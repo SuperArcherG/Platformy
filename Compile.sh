@@ -1,1 +1,0 @@
-pyinstaller Platformy.py -F --clean -y
