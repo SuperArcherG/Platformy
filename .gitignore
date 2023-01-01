@@ -18,3 +18,4 @@ Icon
 dist/assets
 assets.zip
 __MACOSX/assets
+__pycache__/*

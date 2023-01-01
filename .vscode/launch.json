@@ -10,8 +10,7 @@
             "request": "launch",
             "program": "Platformy.py",
             "console": "integratedTerminal",
-            "justMyCode": true,
-            "sudo" : true
+            "justMyCode": true
         }
     ]
 }
