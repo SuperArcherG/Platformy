@@ -1,6 +1,6 @@
-pyinstaller Platformy.py -F -w --clean -y --target-architecture arm64 -i icon.icns --debu all
-rm Platformy.spec
+pyinstaller Game.py -F -w --clean -y --target-architecture x86_64 -i icon.icns --debug all
+rm Game.spec
 rm -r build
-cd dist
-mv Platformy Platformy_MAC
-chmod 755 Platformy_MAC
+# cd dist
+# mv Game Platformy_MAC
+# chmod 755 Platformy_MAC

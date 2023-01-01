@@ -10,6 +10,9 @@ import platform
 import urllib.request
 import zipfile
 
+# import code
+# code.interact(local=globals())
+
 print(os.name)
 print(platform.system())
 if platform.system() == "Darwin" and not os.path.exists(os.getcwd() + "/assets"):

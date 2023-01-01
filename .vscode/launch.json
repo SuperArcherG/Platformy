@@ -8,7 +8,7 @@
             "name": "Platformy",
             "type": "python",
             "request": "launch",
-            "program": "Platformy.py",
+            "program": "Game.py",
             "console": "integratedTerminal",
             "justMyCode": true
         }
