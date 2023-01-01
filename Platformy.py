@@ -1,3 +1,4 @@
+import shutil
 import pygame
 import sys
 import os
@@ -84,6 +85,7 @@ while True:
     # Handle quiting of the game loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            shutil.rmtree(os.getcwd() + "/assets")
             sys.exit()
     old = pressedKeys
     pressedKeys = pygame.key.get_pressed()  # checking pressed keys
