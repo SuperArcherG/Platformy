@@ -1,4 +1,4 @@
-pyinstaller Platformy.py -F --clean -y
+pyinstaller Platformy.py -F -c --clean -y --target-architecture x86_64 -i assets/images/icon.icns
 rm Platformy.spec
 rm -r build
 cd dist
