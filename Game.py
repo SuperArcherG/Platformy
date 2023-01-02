@@ -12,6 +12,10 @@ import zipfile
 
 # import code
 # code.interact(local=globals())
+from AppKit import NSBundle
+
+# NOT path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dummy.json")
+path = NSBundle.mainBundle().pathForResource_ofType_("dummy", "json")
 
 print(os.name)
 print(platform.system())
