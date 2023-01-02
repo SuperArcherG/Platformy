@@ -26,3 +26,4 @@ __pycache__/Background.cpython-39.pyc
 __pycache__/MovingBackground.cpython-39.pyc
 __pycache__/Floor.cpython-39.pyc
 __pycache__/Player.cpython-39.pyc
+assets/*
