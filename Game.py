@@ -17,6 +17,7 @@ from AppKit import NSBundle
 # NOT path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dummy.json")
 path = NSBundle.mainBundle().pathForResource_ofType_("dummy", "json")
 
+DontPurge = True
 print(os.name)
 print(platform.system())
 # and platform.system() == "Darwin"
@@ -35,7 +36,7 @@ font = pygame.font.SysFont("Arial", 18)
 clock = pygame.time.Clock()
 screenwidth, screenheight = (800, 800)
 screen = pygame.display.set_mode(
-    (screenwidth, screenheight), flags=pygame.SCALED, vsync=1)
+    (screenwidth, screenheight), flags=pygame.SCALED, vsync=0)
 Ux, Uy = (screenwidth / 16, screenheight / 16)
 
 worldSizeX = (-100, 100)
@@ -92,10 +93,12 @@ while True:
     # Handle quiting of the game loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            try:
-                shutil.rmtree(os.getcwd() + "/assets")
-            except (PermissionError):
-                0
+            if not DontPurge:
+                try:
+                    os.remove(os.getcwd() + "/assets.zip")
+                    shutil.rmtree(os.getcwd() + "/assets")
+                except (PermissionError):
+                    0
             sys.exit()
     old = pressedKeys
     pressedKeys = pygame.key.get_pressed()  # checking pressed keys
@@ -141,7 +144,7 @@ while True:
     Mountains.Show(screen)
     Floor.UpdateCoords(Px, Py, Ux, Uy)
     Floor.Show(screen)
-    Player.Show(screen, Vx, Vy)
+    Player.Show(screen, Vx, Vy, pressedKeys[pygame.K_DOWN])
     screen.blit(update_fps(), (10, 0))
     clock.tick(60)
     pygame.display.update()

@@ -12,12 +12,12 @@ class Player():
         self.screenheight = screenheight
         self.middle = (screenwidth/2, screenheight/2)
 
-    def Show(self, surface, Vx, Vy):
+    def Show(self, surface, Vx, Vy, pressedDown):
         directionSprite = self.N
-        if (Vx > 0):
+        if (Vx > 0 and abs(Vx) >= -Vy):
             directionSprite = self.R
         else:
-            if (Vx < 0):
+            if (Vx < 0 and abs(Vx) >= -Vy):
                 directionSprite = self.L
             else:
                 if (Vy > 0):
@@ -26,7 +26,10 @@ class Player():
                     if (Vy < 0):
                         directionSprite = self.D
                     else:
-                        directionSprite = self.N
+                        if (pressedDown):
+                            directionSprite = self.D
+                        else:
+                            directionSprite = self.N
 
         sprite = pygame.transform.scale(
             directionSprite, (self.screenwidth/16, self.screenheight/16))
