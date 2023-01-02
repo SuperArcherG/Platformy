@@ -15,7 +15,8 @@ import zipfile
 
 print(os.name)
 print(platform.system())
-if platform.system() == "Darwin" and not os.path.exists(os.getcwd() + "/assets"):
+# platform.system() == "Darwin" and not
+if os.path.exists(os.getcwd() + "/assets"):
     pathToZip = os.getcwd() + "/assets.zip"
     opener = urllib.request.URLopener()
     opener.addheader('User-Agent', 'ARCHER_PROD/Platformy')
