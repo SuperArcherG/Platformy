@@ -4,9 +4,9 @@ import sys
 import os
 import json
 from pygame.locals import *
-from code.MovingBackground import BG
-from code.Player import Player
-from code.Floor import Floor
+from MovingBackground import BG
+from Player import Player
+from Floor import Floor
 import platform
 import urllib.request
 import zipfile
