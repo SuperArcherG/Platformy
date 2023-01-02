@@ -15,8 +15,8 @@ import zipfile
 
 print(os.name)
 print(platform.system())
-# platform.system() == "Darwin" and not
-if os.path.exists(os.getcwd() + "/assets"):
+
+if platform.system() == "Darwin" and not os.path.exists(os.getcwd() + "/assets"):
     pathToZip = os.getcwd() + "/assets.zip"
     opener = urllib.request.URLopener()
     opener.addheader('User-Agent', 'ARCHER_PROD/Platformy')
@@ -25,6 +25,14 @@ if os.path.exists(os.getcwd() + "/assets"):
     with zipfile.ZipFile(pathToZip, 'r') as zip_ref:
         zip_ref.extractall(os.getcwd())
 
+if platform.system() == "Windows" and not os.path.exists(os.getcwd() + "\\assets"):
+    pathToZip = os.getcwd() + '\\assets.zip'
+    opener = urllib.request.URLopener()
+    opener.addheader('User-Agent', 'ARCHER_PROD\Platformy')
+    filename, headers = opener.retrieve(
+        "https://server.superarcherg.com/assets", pathToZip)
+    with zipfile.ZipFile(pathToZip, 'r') as zip_ref:
+        zip_ref.extractall(os.getcwd())
 
 pygame.init()  # initialize pygame
 font = pygame.font.SysFont("Arial", 18)
