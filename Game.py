@@ -2,22 +2,23 @@ import shutil
 import pygame
 import sys
 import os
+import json
 from pygame.locals import *
-from MovingBackground import BG
-from Player import Player
-from Floor import Floor
+from code.MovingBackground import BG
+from code.Player import Player
+from code.Floor import Floor
 import platform
 import urllib.request
 import zipfile
 
 # import code
 # code.interact(local=globals())
-from AppKit import NSBundle
+# from AppKit import NSBundle
 
-# NOT path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dummy.json")
-path = NSBundle.mainBundle().pathForResource_ofType_("dummy", "json")
+# # NOT path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dummy.json")
+# path = NSBundle.mainBundle().pathForResource_ofType_("dummy", "json")
 
-DontPurge = True
+DontPurge = False
 print(os.name)
 print(platform.system())
 # and platform.system() == "Darwin"
@@ -25,18 +26,28 @@ if not os.path.exists(os.getcwd() + "/assets"):
     pathToZip = os.getcwd() + "/assets.zip"
     opener = urllib.request.URLopener()
     opener.addheader('User-Agent', 'ARCHER_PROD/Platformy')
-    filename, headers = opener.retrieve(
+    opener.retrieve(
         "https://server.superarcherg.com/assets", pathToZip)
     with zipfile.ZipFile(pathToZip, 'r') as zip_ref:
         zip_ref.extractall(os.getcwd())
+
+if not os.path.exists(os.getcwd() + "/tmp/"):
+    os.mkdir(os.getcwd()+"/tmp/")
+
+LEVEL_ID = 0
+PATH_TO_LEVEL_DATA = os.getcwd() + '/tmp/' + '0'
+LEVEL_NAME = 'No Name'
+LEVEL_OWNER = 'No Name'
+
 
 pygame.init()  # initialize pygame
 font = pygame.font.SysFont("Arial", 18)
 
 clock = pygame.time.Clock()
-screenwidth, screenheight = (800, 800)
+screenwidth, screenheight = (512, 512)
 screen = pygame.display.set_mode(
-    (screenwidth, screenheight), flags=pygame.SCALED, vsync=0)
+    (screenwidth, screenheight), pygame.SCALED, vsync=1)
+pygame.display.set_caption("Level Select")
 Ux, Uy = (screenwidth / 16, screenheight / 16)
 
 worldSizeX = (-100, 100)
@@ -81,6 +92,25 @@ def update_fps():
     fps_text = font.render(fps, 1, pygame.Color("coral"))
     return fps_text
 
+
+def GetLevel(id):
+    CURRENT_LEVEL = id
+    opener = urllib.request.URLopener()
+    opener.addheader('User-Agent', 'ARCHER_PROD/Platformy')
+    opener.addheader('id', str(id))
+    PATH_TO_LEVEL_DATA = os.getcwd() + '/tmp/' + str(id)
+    opener.retrieve('https://server.superarcherg.com/info?id=' +
+                    str(id), PATH_TO_LEVEL_DATA + '.info')
+    text = open(PATH_TO_LEVEL_DATA+'.info', 'r')
+    jsonFile = json.loads(text.read())
+    LEVEL_NAME = jsonFile['Name']
+    LEVEL_OWNER = jsonFile['Creator']
+    opener.retrieve('https://server.superarcherg.com/icon?id=' +
+                    str(id), PATH_TO_LEVEL_DATA + '.jpeg')
+    pygame.display.set_caption(LEVEL_NAME + " by " + LEVEL_OWNER)
+
+
+GetLevel(1)
 
 # update loop
 while True:
@@ -146,5 +176,8 @@ while True:
     Floor.Show(screen)
     Player.Show(screen, Vx, Vy, pressedKeys[pygame.K_DOWN])
     screen.blit(update_fps(), (10, 0))
+    if LEVEL_ID != 0:
+        screen.blit(pygame.image.load(
+            PATH_TO_LEVEL_DATA + ".jpeg"), (320, 320))
     clock.tick(60)
     pygame.display.update()
