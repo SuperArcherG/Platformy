@@ -57,3 +57,4 @@ assets/images/tiles/Ground.png
 assets/images/tiles/GroundOLD.png
 assets/images/tiles/GroundRock.png
 *.pyc
+tmp
