@@ -59,3 +59,4 @@ assets/images/tiles/GroundRock.png
 *.pyc
 tmp
 tmp/*
+*.info
