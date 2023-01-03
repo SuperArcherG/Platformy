@@ -19,6 +19,8 @@ import zipfile
 # path = NSBundle.mainBundle().pathForResource_ofType_("dummy", "json")
 
 DontPurge = False
+SoundSystem = True
+
 print(os.name)
 print(platform.system())
 # and platform.system() == "Darwin"
@@ -30,6 +32,7 @@ if not os.path.exists(os.getcwd() + "/assets"):
         "https://server.superarcherg.com/assets", pathToZip)
     with zipfile.ZipFile(pathToZip, 'r') as zip_ref:
         zip_ref.extractall(os.getcwd())
+    os.remove(os.getcwd() + "/assets.zip")
 
 if not os.path.exists(os.getcwd() + "/tmp/"):
     os.mkdir(os.getcwd()+"/tmp/")
@@ -44,7 +47,8 @@ pygame.init()  # initialize pygame
 font = pygame.font.SysFont("Arial", 18)
 
 clock = pygame.time.Clock()
-screenwidth, screenheight = (512, 512)
+scaleModifier = 1.5
+screenwidth, screenheight = (512*scaleModifier, 512*scaleModifier)
 screen = pygame.display.set_mode(
     (screenwidth, screenheight), pygame.SCALED, vsync=1)
 pygame.display.set_caption("Level Select")
@@ -63,8 +67,9 @@ xDrift = 1.1
 gravity = 0.2
 Grounded = True
 
-jump = pygame.mixer.Sound(os.getcwd() + "/assets/audio/jump.wav")
-land = pygame.mixer.Sound(os.getcwd() + "/assets/audio/land.wav")
+if SoundSystem:
+    jump = pygame.mixer.Sound(os.getcwd() + "/assets/audio/jump.wav")
+    land = pygame.mixer.Sound(os.getcwd() + "/assets/audio/land.wav")
 
 # player coordinates
 Px, Py = 0, 0
@@ -125,7 +130,6 @@ while True:
         if event.type == pygame.QUIT:
             if not DontPurge:
                 try:
-                    os.remove(os.getcwd() + "/assets.zip")
                     shutil.rmtree(os.getcwd() + "/assets")
                 except (PermissionError):
                     0
@@ -137,7 +141,8 @@ while True:
     if U and Grounded:
         Vy = jumpForce
         Grounded = False
-        jump.play()
+        if SoundSystem:
+            jump.play()
     # if D:
     #     Vy = -1
     if L:
@@ -157,7 +162,7 @@ while True:
     if (max(Py, worldSizeY[0]) == 0):
         Py = 0
         Vy = 0
-        if not Grounded:
+        if not Grounded and SoundSystem:
             land.play()
         Grounded = True
 
@@ -170,6 +175,7 @@ while True:
 
     # Draw calls
     # Set new Background Coordinates and update the screen
+    screen.fill((0, 0, 0))
     Mountains.UpdateCoords(parralax, -Ox, Oy)
     Mountains.Show(screen)
     Floor.UpdateCoords(Px, Py, Ux, Uy)
