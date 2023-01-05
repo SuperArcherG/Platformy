@@ -9,7 +9,8 @@ class BG:
         self.screenheight = screenheight
 
         self.img = pygame.image.load(imagefile)
-
+        self.img = pygame.transform.scale(
+            self.img, (self.screenwidth, self.screenheight))
         self.coord = [0, 0]
         self.coord2 = [-screenwidth, 0]
         self.coord3 = [0, -screenheight]

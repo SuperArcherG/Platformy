@@ -13,5 +13,5 @@ $ python3 -V
 3. Finally, run the program by navigating to the folder in your terminal, and running the following:
 
 ```shell
-$ Python3 Platformy.py
+$ Python3 Game.py
 ```
