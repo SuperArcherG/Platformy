@@ -21,7 +21,7 @@ class Tiles:
         X = -Px * Ux + self.middleOffset[0]
         Y = Py * Uy + self.middleOffset[1]
         for tile in self.data['Tiles']:
-            print(tile)
+            # print(tile)
             lx, ly = tile['x']*Ux, -tile['y']*Uy
             # print(tile['type'])
             surface.blit(self.sprites[tile['type']], (X+lx, Y+ly))

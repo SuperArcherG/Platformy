@@ -20,7 +20,7 @@ assets.zip
 __MACOSX/assets
 __pycache__/*
 __pycache__
-dist/*
+# dist/*
 .eggs/*
 __pycache__/Background.cpython-39.pyc
 __pycache__/MovingBackground.cpython-39.pyc
@@ -62,4 +62,4 @@ tmp/*
 *.info
 tmp/1.info
 tmp/1.jpeg
-
+dist/*
