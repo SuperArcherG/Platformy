@@ -60,3 +60,5 @@ assets/images/tiles/GroundRock.png
 tmp
 tmp/*
 *.info
+tmp/1.info
+tmp/1.jpeg

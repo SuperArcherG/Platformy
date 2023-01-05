@@ -2,7 +2,7 @@ import pygame
 
 
 class Player():
-    def __init__(self, L, R, U, D, N, screenwidth, screenheight):
+    def __init__(self, L, R, U, D, N, screenwidth, screenheight, Uo):
         self.L = pygame.image.load(L)
         self.R = pygame.image.load(R)
         self.U = pygame.image.load(U)
@@ -10,7 +10,7 @@ class Player():
         self.N = pygame.image.load(N)
         self.screenwidth = screenwidth
         self.screenheight = screenheight
-        self.middle = (screenwidth/2, screenheight/2)
+        self.middle = (screenwidth/2-Uo[0], screenheight/2-Uo[1])
 
     def Show(self, surface, Vx, Vy, pressedDown):
         directionSprite = self.N
@@ -34,5 +34,5 @@ class Player():
         sprite = pygame.transform.scale(
             directionSprite, (self.screenwidth/16, self.screenheight/16))
         middleOffset = (self.middle[0] - sprite.get_size()
-                        [0], self.middle[1] - sprite.get_size()[1])
+                        [0]/2, self.middle[1] - sprite.get_size()[1]/2)
         surface.blit(sprite, middleOffset)

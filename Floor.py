@@ -3,7 +3,7 @@ import pygame
 
 class Floor:
 
-    def __init__(self, screenwidth, screenheight, Top, Bottom):
+    def __init__(self, screenwidth, screenheight, Top, Bottom, Uo):
 
         self.screenwidth = screenwidth
         self.screenheight = screenheight
@@ -19,31 +19,18 @@ class Floor:
         self.coord3 = [0, 0]
         self.coord4 = [0, 0]
         self.coord5 = [0, 0]
-        self.middle = (screenwidth/2, screenheight/2)
+        self.middle = (screenwidth/2-Uo[0], screenheight/2-Uo[1])
+        self.offset = self.screenwidth/4
 
-    def Show(self, surface):
-        surface.blit(self.top, self.coord1)
-        surface.blit(self.top, self.coord2)
-        surface.blit(self.top, self.coord3)
-        surface.blit(self.top, self.coord4)
-        surface.blit(self.top, self.coord5)
-        surface.blit(self.bottom, self.coord11)
-        surface.blit(self.bottom, self.coord21)
-        surface.blit(self.bottom, self.coord31)
-        surface.blit(self.bottom, self.coord41)
-        surface.blit(self.bottom, self.coord51)
-
-    def UpdateCoords(self, PlayerX, PlayerY, Ux, Uy):
-        X = (-PlayerX % 4) * Ux
-        Y = PlayerY * Uy + self.middle[1]
-        offset = self.top.get_width()
-        self.coord1 = (X, Y)
-        self.coord2 = (X + offset, Y)
-        self.coord3 = (X + 2 * offset, Y)
-        self.coord4 = (X + 3 * offset, Y)
-        self.coord5 = (X - offset, Y)
-        self.coord11 = (X, Y + offset)
-        self.coord21 = (X + offset, Y + offset)
-        self.coord31 = (X + 2 * offset, Y + offset)
-        self.coord41 = (X + 3 * offset, Y + offset)
-        self.coord51 = (X - offset, Y + offset)
+    def Show(self, surface, PlayerX, PlayerY, Ux, Uy):
+        self.middleOffset = (
+            self.middle[0] - self.screenheight/16, self.middle[1] - self.screenwidth/16)
+        X = (-PlayerX % 4) * Ux - Ux/2
+        Y = PlayerY * Uy + self.middleOffset[1]+Uy*1.5
+        offsets = [-1, 0, 1, 2, 3, 4]
+        heights = [0, -1]
+        sprites = [self.top, self.bottom, self.bottom]
+        for y in heights:
+            for x in offsets:
+                surface.blit(sprites[y], (X+self.offset *
+                             offsets[x], Y-self.offset*heights[y]))
