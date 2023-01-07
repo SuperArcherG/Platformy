@@ -181,11 +181,9 @@ while True:
 
     if (abs(Vx) < 0.01):
         Vx = 0
-
+    prevXY = (Px, Py)
     Px += Vx / framerate * movementUpdate
-    Py += Vy / framerate * movementUpdate
-
-    # Limits
+    Py += Vy / framerate * movementUpdate    # Limits
     Px = max(min(Px, worldSizeX[1]), worldSizeX[0])
     if (max(Py, worldSizeY[0]) == 0):
         Py = 0
@@ -193,12 +191,15 @@ while True:
         if not Grounded and SoundSystem:
             land.play()
         Grounded = True
-
     if not L and not R and Grounded:
         Vx = 0
     else:
         Vx = Vx / xDrift
-
+    currXY = (Px, Py)
+    colliding = Tiles.IsColliding(Px, Py)
+    if colliding:
+        Px, Py = prevXY[0], prevXY[1]
+        Vx, Vy = 0, 0
     update_fps()
 
     # Draw calls
