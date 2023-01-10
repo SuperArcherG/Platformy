@@ -3,14 +3,14 @@ import json
 
 
 class Tiles:
-    def __init__(self, data, pathToImages, screenwidth, screenheight, Uo):
+    def __init__(self, data, PathToImages, screenwidth, screenheight, Uo):
         self.dat = data.read()
         self.data = json.loads(self.dat)
         self.screenwidth = screenwidth
         self.screenheight = screenheight
 
         self.Stone = pygame.transform.scale(pygame.image.load(
-            pathToImages + "Stone.png"), ((self.screenwidth/16, self.screenheight/16)))
+            PathToImages + "Stone.png"), ((self.screenwidth/16, self.screenheight/16)))
 
         self.middle = (screenwidth/2-Uo[0], screenheight/2-Uo[1])
         self.sprites = [self.Stone]
