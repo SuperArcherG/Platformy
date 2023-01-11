@@ -1,5 +1,6 @@
 import pygame
 import json
+# from Debug import Debug
 
 
 class Tiles:
@@ -30,20 +31,51 @@ class Tiles:
         self.dat = data.read()
         self.data = json.loads(self.dat)
 
-    def IsColliding(self, Px, Py):
+    def IsColliding(self, Px, Py, surface, DebugEnabled):
         self.collisionPoints = [
-            (-0.5, -0.5), (0.5, -0.5), (-0.5, 0.5), (0.5, 0.5)]
+            (-0.5, -0.5), (0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)]
+        # if DebugEnabled:
+        #     for i in self.collisionPoints:
+        #         surface.blit(Debug.Circle, i)
         colliding = False
         for tile in self.data['Tiles']:
             # print(tile)
-            lx, ly = tile['x'], -tile['y']
+            lx, ly = tile['x'], tile['y']
+
+            maxx, maxy, minx, miny = 0, 0, 0, 0
+
             for point in self.collisionPoints:
-                Px2, Py2 = (point[0]+Px), (point[1]+Py)
-                check1 = abs(Px2-lx) <= 0.5
-                check2 = abs(Py2-ly-1) <= 0.5
-                # print(str(Px2) + ' ' + str(Py2) + ' ' +
-                #       str(lx+1) + ' ' + str(ly) + ' ' +
-                #       str(check1) + ' ' + str(check2))
-                if check1 and check2:
-                    colliding = True
-        return colliding
+                maxx = max(point[0], maxx)
+                minx = min(point[0], minx)
+                maxy = max(point[1], maxy)
+                miny = min(point[1], miny)
+            c1, c2, c3, c4 = False, False, False, False
+            cx1, cx2 = False, False
+            for point in self.collisionPoints:
+                if (Px > minx+lx-0.5):
+                    c1 = True
+                    cx1 = True
+                if (Px < maxx+lx+0.5):
+                    c2 = True
+                    cx2 = True
+                if (Py > miny+ly):
+                    c3 = True
+                if (Py < maxy+ly+0.5):
+                    c4 = True
+                print(str(c1) + ' ' + str(c2) + ' ' + str(c3) +
+                      ' ' + str(c4) + ' ' + str(cx1) + ' ' + str(cx2))
+
+            if (c1 and c2 and c3 and c4):
+                self.colliding = True
+                if cx1 and cx2:
+                    self.direct = 1
+                    # SnapPos
+                else:
+                    self.direct = 0
+                return self.colliding
+
+    def GetDir(self):
+        return self.direct
+
+    def GetPos(self):
+        return self.SnapPos

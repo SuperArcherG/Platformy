@@ -23,6 +23,7 @@ from Tiles import Tiles
 DontPurge = False
 SoundSystem = True
 ShowIcon = False
+Debug = True
 
 pygame.init()  # initialize pygame
 
@@ -70,7 +71,8 @@ movementUpdate = 10
 
 playerSpeed = 1.5
 jumpForce = 2.5
-xDrift = 1.1
+# xDrift = 1.1
+xDrift = 10
 gravity = 0.2
 Grounded = True
 
@@ -166,6 +168,8 @@ while True:
         Px, Py, Vx, Vy = 0, 3, 0, 0
     if (pressedKeys[pygame.K_r]):
         levelid = GetLevel(1)
+    if (old[pygame.K_F3] != pressedKeys[pygame.K_F3]):
+        Debug = not Debug
     U, D, L, R = old[pygame.K_UP] != pressedKeys[pygame.K_UP] and pressedKeys[
         pygame.K_UP] != 0, pressedKeys[pygame.K_DOWN], pressedKeys[pygame.K_LEFT], pressedKeys[pygame.K_RIGHT]
     if U and Grounded:
@@ -196,10 +200,6 @@ while True:
     else:
         Vx = Vx / xDrift
     currXY = (Px, Py)
-    colliding = Tiles.IsColliding(Px, Py)
-    if colliding:
-        Px, Py = prevXY[0], prevXY[1]
-        Vx, Vy = 0, 0
     update_fps()
 
     # Draw calls
@@ -209,9 +209,18 @@ while True:
     Mountains.Show(screen)
     Floor.Show(screen, Px, Py, Ux, Uy)
     Tiles.Show(screen, Px, Py, Ux, Uy, Uo)
-    Player.Show(screen, Vx, Vy, pressedKeys[pygame.K_DOWN])
     screen.blit(update_fps(), (10, 0))
-    # print(levelid)
+    colliding = Tiles.IsColliding(Px, Py, screen, Debug)
+    if colliding:
+        direct = Tiles.GetDir()
+        if direct == 1:
+            Px = prevXY[0]
+            Vx = 0
+        else:
+            Py = prevXY[1]
+            Vy = 0
+            Grounded = True
+    Player.Show(screen, Vx, Vy, pressedKeys[pygame.K_DOWN])
     if levelid != '0' and ShowIcon:
         img2 = pygame.image.load(
             PATH_TO_LEVEL_DATA + ".jpeg")
