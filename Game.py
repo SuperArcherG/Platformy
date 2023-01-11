@@ -213,13 +213,12 @@ while True:
     colliding = Tiles.IsColliding(Px, Py, screen, Debug)
     if colliding:
         direct = Tiles.GetDir()
+        Py = prevXY[1]
+        Vy = 0
+        Grounded = True
         if direct == 1:
             Px = prevXY[0]
             Vx = 0
-        else:
-            Py = prevXY[1]
-            Vy = 0
-            Grounded = True
     Player.Show(screen, Vx, Vy, pressedKeys[pygame.K_DOWN])
     if levelid != '0' and ShowIcon:
         img2 = pygame.image.load(
