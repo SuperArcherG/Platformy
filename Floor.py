@@ -29,7 +29,7 @@ class Floor:
         Y = PlayerY * Uy + self.middleOffset[1]+Uy*1.5
         offsets = [-1, 0, 1, 2, 3, 4]
         heights = [0, -1]
-        sprites = [self.top, self.bottom, self.bottom]
+        sprites = [self.top, self.bottom]
         for y in heights:
             for x in offsets:
                 surface.blit(sprites[y], (X+self.offset *
