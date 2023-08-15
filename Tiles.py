@@ -22,9 +22,9 @@ class Tiles:
         X = -Px * Ux + self.middleOffset[0]
         Y = Py * Uy + self.middleOffset[1]
         for tile in self.data['Tiles']:
-            # print(tile)
-            lx, ly = tile['x']*Ux, -tile['y']*Uy
-            surface.blit(self.sprites[tile['type']], (X+lx, Y+ly))
+            lx, ly = self.data['Tiles'][tile]['x']*Ux, -self.data['Tiles'][tile]['y']*Uy
+            surface.blit(
+                self.sprites[self.data['Tiles'][tile]['type']], (X+lx, Y+ly))
        # surface.blit()
 
     def UpdateData(self, data):
@@ -32,50 +32,16 @@ class Tiles:
         self.data = json.loads(self.dat)
 
     def IsColliding(self, Px, Py, surface, DebugEnabled):
-        self.collisionPoints = [
-            (-0.5, -0.5), (0.5, -0.5), (0.5, 0.5), (-0.5, 0.5)]
-        # if DebugEnabled:
-        #     for i in self.collisionPoints:
-        #         surface.blit(Debug.Circle, i)
         colliding = False
         for tile in self.data['Tiles']:
-            # print(tile)
-            lx, ly = tile['x'], tile['y']
-
-            maxx, maxy, minx, miny = 0, 0, 0, 0
-
-            for point in self.collisionPoints:
-                maxx = max(point[0], maxx)
-                minx = min(point[0], minx)
-                maxy = max(point[1], maxy)
-                miny = min(point[1], miny)
-            c1, c2, c3, c4 = False, False, False, False
-            cx1, cx2 = False, False
-            for point in self.collisionPoints:
-                if (Px > minx+lx-0.5):
-                    c1 = True
-                    cx1 = True
-                if (Px < maxx+lx+0.5):
-                    c2 = True
-                    cx2 = True
-                if (Py > miny+ly):
-                    c3 = True
-                if (Py < maxy+ly+0.5):
-                    c4 = True
-                print(str(c1) + ' ' + str(c2) + ' ' + str(c3) +
-                      ' ' + str(c4) + ' ' + str(cx1) + ' ' + str(cx2))
-
-            if (c1 and c2 and c3 and c4):
-                self.colliding = True
-                if cx1 and cx2:
-                    self.direct = 1
-                    # SnapPos
-                else:
-                    self.direct = 0
-                return self.colliding
-
-    def GetDir(self):
-        return self.direct
-
-    def GetPos(self):
-        return self.SnapPos
+            x = self.data['Tiles'][tile]['x']
+            y = self.data['Tiles'][tile]['y']
+            # print(str(x) + ", " + str(y))
+            a = x - 0.5 < Px + 0.5
+            b = x + 0.5 > Px - 0.5
+            c = y - 0.5 < Py + 0.5
+            d = y + 0.5 > Py - 0.5
+            print(str(a), str(b), str(c), str(d))
+            if a & b & c & d:
+                colliding = True
+        return colliding
