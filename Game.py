@@ -23,6 +23,8 @@ from Tiles import Tiles
 DontPurge = False
 SoundSystem = True
 ShowIcon = False
+Debug = True
+buffer = 1
 
 pygame.init()  # initialize pygame
 
@@ -70,7 +72,8 @@ movementUpdate = 10
 
 playerSpeed = 1.5
 jumpForce = 2.5
-xDrift = 1.1
+# xDrift = 1.1
+xDrift = 10
 gravity = 0.2
 Grounded = True
 
@@ -106,6 +109,18 @@ def update_fps():
     fps = str(int(clock.get_fps()))
     fps_text = font.render(fps, 1, pygame.Color("coral"))
     return fps_text
+
+
+def DrawCollissionSquare(x, y):
+    # Player Bounding Box
+    pygame.draw.line(color="red", surface=screen, start_pos=(
+        x-Ux/2, screenheight/2-Uy/2), end_pos=(x+Ux/2, screenheight/2-Uy/2), width=1)
+    pygame.draw.line(color="red", surface=screen, start_pos=(
+        x-Ux/2, screenheight/2+Uy/2), end_pos=(x+Ux/2, screenheight/2+Uy/2), width=1)
+    pygame.draw.line(color="red", surface=screen, start_pos=(
+        x-Ux/2, screenheight/2-Uy/2), end_pos=(x-Ux/2, screenheight/2+Uy/2), width=1)
+    pygame.draw.line(color="red", surface=screen, start_pos=(
+        x+Ux/2, screenheight/2-Uy/2), end_pos=(x+Ux/2, screenheight/2+Uy/2), width=1)
 
 
 levelid = '0'
@@ -144,11 +159,13 @@ PATH_TO_LEVEL_DATA = os.getcwd() + '/tmp/' + levelid
 
 # update loop
 while True:
+    prevXY = (Px, Py)
+
     Ox = Px * Ux
     Oy = Py * Uy
 
     time = clock.tick(framerate) / 1000.0
-    x, y = pygame.mouse.get_pos()
+    MouseX, MouseY = pygame.mouse.get_pos()
 
     # Handle quiting of the game loop
     for event in pygame.event.get():
@@ -166,6 +183,12 @@ while True:
         Px, Py, Vx, Vy = 0, 3, 0, 0
     if (pressedKeys[pygame.K_r]):
         levelid = GetLevel(1)
+    if (old[pygame.K_F3] != pressedKeys[pygame.K_F3]):
+        buffer += 1
+        if buffer == 2:
+         Debug = not Debug
+         buffer = 0
+
     U, D, L, R = old[pygame.K_UP] != pressedKeys[pygame.K_UP] and pressedKeys[
         pygame.K_UP] != 0, pressedKeys[pygame.K_DOWN], pressedKeys[pygame.K_LEFT], pressedKeys[pygame.K_RIGHT]
     if U and Grounded:
@@ -183,9 +206,7 @@ while True:
         Vx = 0
 
     Px += Vx / framerate * movementUpdate
-    Py += Vy / framerate * movementUpdate
-
-    # Limits
+    Py += Vy / framerate * movementUpdate    # Limits
     Px = max(min(Px, worldSizeX[1]), worldSizeX[0])
     if (max(Py, worldSizeY[0]) == 0):
         Py = 0
@@ -193,12 +214,11 @@ while True:
         if not Grounded and SoundSystem:
             land.play()
         Grounded = True
-
     if not L and not R and Grounded:
         Vx = 0
     else:
         Vx = Vx / xDrift
-
+    currXY = (Px, Py)
     update_fps()
 
     # Draw calls
@@ -208,9 +228,15 @@ while True:
     Mountains.Show(screen)
     Floor.Show(screen, Px, Py, Ux, Uy)
     Tiles.Show(screen, Px, Py, Ux, Uy, Uo)
-    Player.Show(screen, Vx, Vy, pressedKeys[pygame.K_DOWN])
     screen.blit(update_fps(), (10, 0))
-    # print(levelid)
+    colliding = Tiles.IsColliding(Px, Py, screen, Debug)
+    if colliding:
+        Py = prevXY[1]
+        Px = prevXY[0]
+        Vy = 0
+        Vx = 0
+    # REWRITE
+    Player.Show(screen, Px, Py, pressedKeys[pygame.K_DOWN])
     if levelid != '0' and ShowIcon:
         img2 = pygame.image.load(
             PATH_TO_LEVEL_DATA + ".jpeg")
@@ -220,4 +246,8 @@ while True:
         img2.set_alpha(128)
         screen.blit(img2, (screenwidth-Ux*scale, 0))
     clock.tick(60)
+
+    if Debug:
+        DrawCollissionSquare(screenwidth/2, screenheight/2)
+
     pygame.display.update()
