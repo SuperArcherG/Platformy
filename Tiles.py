@@ -25,13 +25,13 @@ class Tiles:
             lx, ly = self.data['Tiles'][tile]['x']*Ux, -self.data['Tiles'][tile]['y']*Uy
             surface.blit(
                 self.sprites[self.data['Tiles'][tile]['type']], (X+lx, Y+ly))
-       # surface.blit()
+        # surface.blit()
 
     def UpdateData(self, data):
         self.dat = data.read()
         self.data = json.loads(self.dat)
 
-    def IsColliding(self, Px, Py, surface, DebugEnabled):
+    def IsColliding(self, Px, Py, PrevX, PrevY, surface, DebugEnabled):
         colliding = False
         for tile in self.data['Tiles']:
             x = self.data['Tiles'][tile]['x']
@@ -41,7 +41,19 @@ class Tiles:
             b = x + 0.5 > Px - 0.5
             c = y - 0.5 < Py + 0.5
             d = y + 0.5 > Py - 0.5
-            print(str(a), str(b), str(c), str(d))
+
+            a2 = x - 0.5 < PrevX + 0.5
+            b2 = x + 0.5 > PrevX - 0.5
+            c2 = y - 0.5 < PrevY + 0.5
+            d2 = y + 0.5 > PrevY - 0.5
+
+            print(str(a), str(b), str(c), str(d),
+                  str(a2), str(b2), str(c2), str(d2))
             if a & b & c & d:
+                if a & b:
+                    e = 1
+                if c & d:
+                    e = 1
                 colliding = True
+
         return colliding

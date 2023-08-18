@@ -1,7 +1,24 @@
-import shutil
-import pygame
-import sys
+import subprocess as sp
 import os
+import sys
+
+
+def pip_install(mod):
+    print (sp.check_output("pip install %s" % mod, shell=True))
+
+
+if __name__ == "__main__":
+    if os.getuid() != 0:
+        print ("Sorry, you need to run the script as root.")
+        sys.exit()
+
+    try:
+        import pygame
+    except:
+        pip_install('pygame')
+        import pygame
+
+import shutil
 import json
 from pygame.locals import *
 from MovingBackground import BG
@@ -13,6 +30,8 @@ import zipfile
 from Tiles import Tiles
 
 
+
+
 # import code
 # code.interact(local=globals())
 # from AppKit import NSBundle
@@ -20,7 +39,7 @@ from Tiles import Tiles
 # # NOT path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dummy.json")
 # path = NSBundle.mainBundle().pathForResource_ofType_("dummy", "json")
 
-DontPurge = False
+DontPurge = True
 SoundSystem = True
 ShowIcon = False
 Debug = True
@@ -229,14 +248,16 @@ while True:
     Floor.Show(screen, Px, Py, Ux, Uy)
     Tiles.Show(screen, Px, Py, Ux, Uy, Uo)
     screen.blit(update_fps(), (10, 0))
-    colliding = Tiles.IsColliding(Px, Py, screen, Debug)
+    t1,t2=prevXY
+    colliding = Tiles.IsColliding(Px, Py, t1, t2, screen, Debug)
     if colliding:
         Py = prevXY[1]
         Px = prevXY[0]
         Vy = 0
         Vx = 0
+        Grounded = True
     # REWRITE
-    Player.Show(screen, Px, Py, pressedKeys[pygame.K_DOWN])
+    Player.Show(screen, Vx, Vy, pressedKeys[pygame.K_DOWN])
     if levelid != '0' and ShowIcon:
         img2 = pygame.image.load(
             PATH_TO_LEVEL_DATA + ".jpeg")
