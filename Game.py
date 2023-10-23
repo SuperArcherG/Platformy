@@ -126,9 +126,13 @@ SoundSystem = True
 ShowIcon = True
 Debug = True
 buffer = 1
-ip = str(get_local_ip()) + ":6050"
+ip = "http://"+str(get_local_ip()) + ":6050"
 pygame.init()  # initialize pygame
-
+try:
+ pygame.mixer.init()
+except:
+ print("ERR Audio Mixer Failed to Initialize, Check That You Have the Proper Drivers Installed")
+ SoundSystem = False
 # print(os.name)
 # print(platform.system())
 # and platform.system() == "Darwin"
