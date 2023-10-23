@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess as sp
 import os
 from os import environ
@@ -14,7 +16,24 @@ import platform
 import urllib.request
 import zipfile
 from Tiles import Tiles
+import subprocess
+import warnings
+import time
 
+import atexit
+
+# Define a function to be called on exit
+def on_exit():
+    print("Exiting. Clean-up code goes here.")
+    # Function to delete the lock file
+    def delete_lock_file():
+        try:
+            os.remove("server.lock")
+        except FileNotFoundError:
+            print("Lock file not found. It might have already been deleted.")
+    delete_lock_file()
+    
+atexit.register(on_exit)
 
 
 RunLocalServer = True
@@ -22,6 +41,50 @@ RunLocalServer = True
 if RunLocalServer:
     from PIL import Image
     import socket
+    import psutil
+    import time
+
+
+    def find_process_by_port(port):
+        for proc in psutil.process_iter(['pid', 'connections']):
+            try:
+                if proc.info['connections']:
+                    for conn in proc.info['connections']:
+                        if conn.laddr.port == port:
+                            return proc
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
+        return None
+
+    def kill_process_by_port(port):
+        process = find_process_by_port(port)
+        if process:
+            print("Killing Server")
+            try:
+                process.terminate()
+            except psutil.NoSuchProcess:
+                pass  # Process might have already terminated
+
+            # Give some time for the process to terminate
+            time.sleep(2)
+
+            # If the process is still alive, try killing forcefully
+            if process.is_running():
+                print("Killing Server")
+                try:
+                    process.kill()
+                except psutil.NoSuchProcess:
+                    pass  # Process might have already terminated
+        else:
+            print("No Servers Running")
+    # Specify the port to kill processes on
+    port_to_kill = 6050
+
+    # Kill the process running on the specified port
+    kill_process_by_port(port_to_kill)
+
+
+
     def get_local_ip():
         try:
             # Create a socket connection to an external server (doesn't actually connect)
@@ -30,13 +93,34 @@ if RunLocalServer:
             local_ip = s.getsockname()[0]
             s.close()
             return local_ip
-        except Exception as e:
-            print(f"An error occurred while getting the local IP: {e}")
+        except:
+            print("ERROR IN GETTING IP")
             return None
         
     ip = str(get_local_ip()) + ":6050"
+    
+            
+    script_path = "/home/archer/Desktop/Github Desktop/Platformy/RunServerLocal.py"
+
+    try:
+        print("Starting Server...")
+        # Run the script in the background
+        subprocess.Popen(["sudo","python3", script_path])       
+        # Continue with the rest of your current script
+        print("Running Local Server in the Background")
+    except:
+        print("SERVER START ERROR")
 else:
     ip = "https://server.superarcherg.com:80"
+
+while not os.path.exists(os.getcwd()+"/server.lock"):
+    time.sleep(1)
+    print("Server Ping Fail")
+
+print("Waiting for server to start")
+time.sleep(10)
+print("Server has started")
+
 DontPurge = True
 SoundSystem = True
 ShowIcon = True
@@ -169,8 +253,8 @@ def GetLevel(id):
     Tiles.UpdateData(open(PATH_TO_LEVEL_DATA + '.data', 'r'))
     return levelid
 
-
 levelid = GetLevel(1)
+
 PATH_TO_LEVEL_DATA = os.getcwd() + '/tmp/' + levelid
 
 # update loop

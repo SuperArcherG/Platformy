@@ -1,0 +1,1 @@
+sudo pip3 uninstall pygame pyinstaller gitpython Pillow psutil --break-system-packages -y
