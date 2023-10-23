@@ -33,7 +33,7 @@ print("Running Server")
 
 import subprocess
 
-script_path = "/home/archer/Desktop/Github Desktop/Platformy/Platformy-Server/server.py"
+script_path = os.getcwd() + "/Platformy-Server/server.py"
 
 try:
     subprocess.run(["python3", script_path])

@@ -1,1 +1,1 @@
-sudo pip3 install pygame pyinstaller gitpython Pillow psutil --break-system-packages
+sudo pip3 install pygame pyinstaller gitpython Pillow psutil waitress werkzeug flask requests

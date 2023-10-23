@@ -100,7 +100,7 @@ if RunLocalServer:
     ip = str(get_local_ip()) + ":6050"
     
             
-    script_path = "/home/archer/Desktop/Github Desktop/Platformy/RunServerLocal.py"
+    script_path = os.getcwd()+"/RunServerLocal.py"
 
     try:
         print("Starting Server...")
@@ -126,7 +126,7 @@ SoundSystem = True
 ShowIcon = True
 Debug = True
 buffer = 1
-ip = 'http://192.168.0.126:6050'
+ip = str(get_local_ip()) + ":6050"
 pygame.init()  # initialize pygame
 
 # print(os.name)
