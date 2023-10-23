@@ -1,23 +1,9 @@
 import subprocess as sp
 import os
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
 import sys
-
-
-def pip_install(mod):
-    print (sp.check_output("pip install %s" % mod, shell=True))
-
-
-if __name__ == "__main__":
-    if os.getuid() != 0:
-        print ("Sorry, you need to run the script as root.")
-        sys.exit()
-
-    try:
-        import pygame
-    except:
-        pip_install('pygame')
-        import pygame
-
+import pygame
 import shutil
 import json
 from pygame.locals import *
@@ -31,20 +17,32 @@ from Tiles import Tiles
 
 
 
+RunLocalServer = True
 
-# import code
-# code.interact(local=globals())
-# from AppKit import NSBundle
-
-# # NOT path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "dummy.json")
-# path = NSBundle.mainBundle().pathForResource_ofType_("dummy", "json")
-
+if RunLocalServer:
+    from PIL import Image
+    import socket
+    def get_local_ip():
+        try:
+            # Create a socket connection to an external server (doesn't actually connect)
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect(("8.8.8.8", 80))  # Use a known external server (Google's public DNS server)
+            local_ip = s.getsockname()[0]
+            s.close()
+            return local_ip
+        except Exception as e:
+            print(f"An error occurred while getting the local IP: {e}")
+            return None
+        
+    ip = str(get_local_ip()) + ":6050"
+else:
+    ip = "https://server.superarcherg.com:80"
 DontPurge = True
 SoundSystem = True
-ShowIcon = False
+ShowIcon = True
 Debug = True
 buffer = 1
-
+ip = 'http://192.168.0.126:6050'
 pygame.init()  # initialize pygame
 
 # print(os.name)
@@ -54,8 +52,7 @@ if not os.path.exists(os.getcwd() + "/assets"):
     pathToZip = os.getcwd() + "/assets.zip"
     opener = urllib.request.URLopener()
     opener.addheader('User-Agent', 'ARCHER_PROD/Platformy')
-    opener.retrieve(
-        "https://server.superarcherg.com/assets", pathToZip)
+    opener.retrieve(ip + '/assets', pathToZip)
     with zipfile.ZipFile(pathToZip, 'r') as zip_ref:
         zip_ref.extractall(os.getcwd())
     os.remove(os.getcwd() + "/assets.zip")
@@ -72,10 +69,10 @@ pygame.display.set_icon(Icon)
 
 
 font = pygame.font.SysFont("Arial", 18)
-
+resolution = 400
 clock = pygame.time.Clock()
 scaleModifier = 1
-screenwidth, screenheight = (800*scaleModifier, 800*scaleModifier)
+screenwidth, screenheight = (resolution*scaleModifier, resolution*scaleModifier)
 screen = pygame.display.set_mode(
     (screenwidth, screenheight), pygame.SCALED, vsync=1)
 pygame.display.set_caption("Level Select")
@@ -151,18 +148,18 @@ def GetLevel(id):
     opener.addheader('User-Agent', 'ARCHER_PROD/Platformy')
     opener.addheader('id', str(id))
     PATH_TO_LEVEL_DATA = os.getcwd() + '/tmp/' + str(id)
-    opener.retrieve('https://server.superarcherg.com/info?id=' +
+    opener.retrieve(ip + '/info?id=' +
                     str(id), PATH_TO_LEVEL_DATA + '.info')
-    opener.retrieve('https://server.superarcherg.com/data?id=' +
+    opener.retrieve(ip + '/data?id=' +
                     str(id), PATH_TO_LEVEL_DATA + '.data')
-    opener.retrieve('https://server.superarcherg.com/owner?id=' +
+    opener.retrieve(ip + '/owner?id=' +
                     str(id), PATH_TO_LEVEL_DATA + '.owner')
     text = open(PATH_TO_LEVEL_DATA+'.info', 'r')
     owner = open(PATH_TO_LEVEL_DATA+'.owner', 'r')
     jsonFile = json.loads(text.read())
     LEVEL_NAME = jsonFile['Name']
     LEVEL_OWNER = jsonFile['Creator']
-    opener.retrieve('https://server.superarcherg.com/icon?id=' +
+    opener.retrieve(ip + '/icon?id=' +
                     str(id), PATH_TO_LEVEL_DATA + '.jpeg')
     pygame.display.set_caption(
         LEVEL_NAME + " by " + LEVEL_OWNER + " Uploaded by " + owner.read() + ' ID:' + levelid)
