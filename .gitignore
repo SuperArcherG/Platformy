@@ -17,6 +17,7 @@ build/Platformy
 Icon
 dist/assets
 assets.zip
+Platformy-Server/*
 __MACOSX/assets
 __pycache__/*
 __pycache__
