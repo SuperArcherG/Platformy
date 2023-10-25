@@ -31,7 +31,7 @@ class Tiles:
         self.dat = data.read()
         self.data = json.loads(self.dat)
 
-    def IsColliding(self, Px, Py, PrevX, PrevY, surface, DebugEnabled):
+    def IsColliding(self, Px, Py, PrevX, PrevY, DebugEnabled):
         colliding = False
         for tile in self.data['Tiles']:
             x = self.data['Tiles'][tile]['x']
@@ -47,13 +47,39 @@ class Tiles:
             c2 = y - 0.5 < PrevY + 0.5
             d2 = y + 0.5 > PrevY - 0.5
 
-            print(str(a), str(b), str(c), str(d),
-                  str(a2), str(b2), str(c2), str(d2))
+            if DebugEnabled:
+                print(str(a), str(b), str(c), str(d), str(a2), str(b2), str(c2), str(d2))
             if a & b & c & d:
                 if a & b:
                     e = 1
                 if c & d:
                     e = 1
                 colliding = True
-
+        
         return colliding
+    def correctedX(self, Px, Py, PrevX, PrevY):
+        for tile in self.data['Tiles']:
+            x = self.data['Tiles'][tile]['x']
+            y = self.data['Tiles'][tile]['y']
+            # print(str(x) + ", " + str(y))
+            a = x - 0.5 < Px + 0.5
+            b = x + 0.5 > Px - 0.5
+            c = y - 0.5 < Py + 0.5
+            d = y + 0.5 > Py - 0.5
+
+            a2 = x - 0.5 < PrevX + 0.5
+            b2 = x + 0.5 > PrevX - 0.5
+            c2 = y - 0.5 < PrevY + 0.5
+            d2 = y + 0.5 > PrevY - 0.5
+            
+            res = 0
+            if a and not a2:
+                res = x-1
+                print("PR hit TL")
+            else:
+                res = Px
+            
+            return(res)
+            
+    def correctedY(self, Px, Py, PrevX, PrevY, surface, DebugEnabled):
+        print()

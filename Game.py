@@ -19,31 +19,54 @@ from Tiles import Tiles
 import subprocess
 import warnings
 import time
-
-import atexit
-
-# Define a function to be called on exit
-def on_exit():
-    print("Exiting. Clean-up code goes here.")
-    # Function to delete the lock file
-    def delete_lock_file():
-        try:
-            os.remove("server.lock")
-        except FileNotFoundError:
-            print("Lock file not found. It might have already been deleted.")
-    delete_lock_file()
-    
-atexit.register(on_exit)
+import socket
 
 
-RunLocalServer = True
+
+RunLocalServer = False
+
+
+
+
+def is_server_up(hostname, port):
+    try:
+        # Create a socket object
+        with socket.create_connection((hostname, port), timeout=5) as sock:
+            return True
+    except (socket.timeout, socket.error):
+        return False
+
+# Set the server address and port
+server_address = "https://play.superarcherg.com/"
+server_port = 80
+
+# Check if the server is up
+#RunLocalServer = not is_server_up(server_address, server_port)
 
 if RunLocalServer:
+        
+        
+    import atexit
+
+    # Define a function to be called on exit
+    def on_exit():
+        print("Closing...")
+        print("Deleting Lock File")
+        # Function to delete the lock file
+        def delete_lock_file():
+            try:
+                os.remove("server.lock")
+                print("Lock File Deleted")
+            except FileNotFoundError:
+                print("Lock file not found. It might have already been deleted.")
+        delete_lock_file()
+        
+    atexit.register(on_exit)
+
     from PIL import Image
     import socket
     import psutil
     import time
-
 
     def find_process_by_port(port):
         for proc in psutil.process_iter(['pid', 'connections']):
@@ -110,31 +133,40 @@ if RunLocalServer:
         print("Running Local Server in the Background")
     except:
         print("SERVER START ERROR")
+        
+    while not os.path.exists(os.getcwd()+"/server.lock"):
+        time.sleep(1)
+        print("Server Ping Fail")
+
+    print("Waiting for server to start")
+    time.sleep(3)
+    print("Server has started")
+
+    ip = "http://"+str(get_local_ip()) + ":6050"
 else:
     ip = "https://server.superarcherg.com:80"
 
-while not os.path.exists(os.getcwd()+"/server.lock"):
-    time.sleep(1)
-    print("Server Ping Fail")
-
-print("Waiting for server to start")
-time.sleep(10)
-print("Server has started")
+ip = "http://192.168.0.126:6050" #
 
 DontPurge = True
 SoundSystem = True
 ShowIcon = True
-Debug = True
-buffer = 1
-ip = "http://"+str(get_local_ip()) + ":6050"
+Debug = False
+LDM = True
+
+buffer1 = 1
+buffer2 = 1
+
 pygame.init()  # initialize pygame
+
 try:
  pygame.mixer.init()
 except:
  print("ERR Audio Mixer Failed to Initialize, Check That You Have the Proper Drivers Installed")
  SoundSystem = False
-# print(os.name)
-# print(platform.system())
+
+print(os.name)
+print(platform.system())
 # and platform.system() == "Darwin"
 if not os.path.exists(os.getcwd() + "/assets"):
     pathToZip = os.getcwd() + "/assets.zip"
@@ -208,6 +240,9 @@ pygame.display.set_caption('Platformy')
 pressedKeys = pygame.key.get_pressed()
 pygame.mouse.set_visible(True)
 
+img2 = pygame.image.load(
+            os.getcwd() + "/tmp.png")
+
 
 def update_fps():
     fps = str(int(clock.get_fps()))
@@ -225,7 +260,7 @@ def DrawCollissionSquare(x, y):
         x-Ux/2, screenheight/2-Uy/2), end_pos=(x-Ux/2, screenheight/2+Uy/2), width=1)
     pygame.draw.line(color="red", surface=screen, start_pos=(
         x+Ux/2, screenheight/2-Uy/2), end_pos=(x+Ux/2, screenheight/2+Uy/2), width=1)
-
+    
 
 levelid = '0'
 
@@ -255,15 +290,23 @@ def GetLevel(id):
         PATH_TO_LEVEL_DATA + ".jpeg")
     pygame.display.set_icon(img2)
     Tiles.UpdateData(open(PATH_TO_LEVEL_DATA + '.data', 'r'))
+    img2 = pygame.image.load(
+            PATH_TO_LEVEL_DATA + ".jpeg")
+    scale = 2
+    img2 = pygame.transform.scale(img2, (16*scale, 16*scale))
+    img2 = pygame.transform.scale(img2, (Ux*scale, Uy*scale))
+    img2.set_alpha(128)
     return levelid
 
 levelid = GetLevel(1)
 
 PATH_TO_LEVEL_DATA = os.getcwd() + '/tmp/' + levelid
 
+prevXY = (0, 0)
+
+
 # update loop
 while True:
-    prevXY = (Px, Py)
 
     Ox = Px * Ux
     Oy = Py * Uy
@@ -288,11 +331,22 @@ while True:
     if (pressedKeys[pygame.K_r]):
         levelid = GetLevel(1)
     if (old[pygame.K_F3] != pressedKeys[pygame.K_F3]):
-        buffer += 1
-        if buffer == 2:
+        buffer1 += 1
+        if buffer1 == 2:
          Debug = not Debug
-         buffer = 0
-
+         buffer1 = 0
+    if (old[pygame.K_F4] != pressedKeys[pygame.K_F4]):
+        buffer2 += 1
+        if buffer2 == 2:
+         LDM = not LDM
+         if(not LDM):
+            img2 = pygame.image.load(
+            PATH_TO_LEVEL_DATA + ".jpeg")
+            scale = 2
+            img2 = pygame.transform.scale(img2, (16*scale, 16*scale))
+            img2 = pygame.transform.scale(img2, (Ux*scale, Uy*scale))
+            img2.set_alpha(128)
+         buffer2 = 0
     U, D, L, R = old[pygame.K_UP] != pressedKeys[pygame.K_UP] and pressedKeys[
         pygame.K_UP] != 0, pressedKeys[pygame.K_DOWN], pressedKeys[pygame.K_LEFT], pressedKeys[pygame.K_RIGHT]
     if U and Grounded:
@@ -323,37 +377,58 @@ while True:
     else:
         Vx = Vx / xDrift
     currXY = (Px, Py)
+    
     update_fps()
 
     # Draw calls
     # Set new Background Coordinates and update the screen
     screen.fill((0, 0, 0))
-    Mountains.UpdateCoords(parralax, -Ox, Oy)
-    Mountains.Show(screen)
+    if not LDM:
+        Mountains.UpdateCoords(parralax, -Ox, Oy)
+        Mountains.Show(screen)
     Floor.Show(screen, Px, Py, Ux, Uy)
     Tiles.Show(screen, Px, Py, Ux, Uy, Uo)
-    screen.blit(update_fps(), (10, 0))
     t1,t2=prevXY
-    colliding = Tiles.IsColliding(Px, Py, t1, t2, screen, Debug)
+    colliding = Tiles.IsColliding(Px, Py, t1, t2, Debug)
+    
     if colliding:
-        Py = prevXY[1]
-        Px = prevXY[0]
-        Vy = 0
-        Vx = 0
         Grounded = True
+    
+    ppx = 0
+    ppy = 0
+    
+    Cx = Tiles.correctedX(Px, Py, t1, t2)
+    #Cy = Tiles.correctedX(Px, Py, t1, t2)
+    Cy = Py
+    
+    if Cx != Px:
+        Px = Cx
+        ppx = prevXY[0]
+        Vx = 0
+    else:
+        ppx = Px
+        
+    if Cy != Py:
+        Px = Cy
+        ppy = prevXY[1]
+        Vy = 0
+    else:
+        ppy = Py   
+    
+    prevXY = (ppx, ppy)
+
     # REWRITE
+    
+
     Player.Show(screen, Vx, Vy, pressedKeys[pygame.K_DOWN])
-    if levelid != '0' and ShowIcon:
-        img2 = pygame.image.load(
-            PATH_TO_LEVEL_DATA + ".jpeg")
+    if levelid != '0' and ShowIcon and not LDM:
         scale = 2
-        img2 = pygame.transform.scale(img2, (16*scale, 16*scale))
-        img2 = pygame.transform.scale(img2, (Ux*scale, Uy*scale))
-        img2.set_alpha(128)
         screen.blit(img2, (screenwidth-Ux*scale, 0))
     clock.tick(60)
 
     if Debug:
         DrawCollissionSquare(screenwidth/2, screenheight/2)
+        screen.blit(update_fps(), (10, 0))
+        pygame.draw.line(color="red", surface=screen, start_pos=(0,screenheight/2+Uy/2+Py*Uy), end_pos=(screenwidth, screenheight/2+Uy/2+Py*Uy), width=1)
 
     pygame.display.update()

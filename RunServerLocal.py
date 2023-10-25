@@ -6,7 +6,7 @@ import shutil
 
 
 
-STABLE = False
+STABLE = True
 if not STABLE:
     print("Release is not marked as STABLE...")
     print("Deleting current version and reinstalling...")
@@ -38,4 +38,4 @@ script_path = os.getcwd() + "/Platformy-Server/server.py"
 try:
     subprocess.run(["python3", script_path])
 except Exception as e:
-    print("An error occurred: " + str(e))
+    print("An error occurred")
