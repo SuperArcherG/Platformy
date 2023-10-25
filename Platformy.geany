@@ -27,9 +27,9 @@ long_line_behaviour=1
 long_line_column=72
 
 [files]
-current_page=1
-FILE_NAME_0=11787;Python;0;EUTF-8;0;1;0;%2Fhome%2Farcher%2FDesktop%2FGithub%20Desktop%2FPlatformy%2FGame.py;0;4
-FILE_NAME_1=2690;Python;0;EUTF-8;0;1;0;%2Fhome%2Farcher%2FDesktop%2FGithub%20Desktop%2FPlatformy%2FTiles.py;0;4
+current_page=0
+FILE_NAME_0=12022;Python;0;EUTF-8;0;1;0;%2Fhome%2Farcher%2FDesktop%2FGithub%20Desktop%2FPlatformy%2FGame.py;0;4
+FILE_NAME_1=3795;Python;0;EUTF-8;0;1;0;%2Fhome%2Farcher%2FDesktop%2FGithub%20Desktop%2FPlatformy%2FTiles.py;0;4
 FILE_NAME_2=1042;Python;0;EUTF-8;0;1;0;%2Fhome%2Farcher%2FDesktop%2FGithub%20Desktop%2FPlatformy%2FRunServerLocal.py;0;4
 FILE_NAME_3=0;Python;0;EUTF-8;0;1;0;%2Fhome%2Farcher%2FDesktop%2FGithub%20Desktop%2FPlatformy%2FPlayer.py;0;8
 

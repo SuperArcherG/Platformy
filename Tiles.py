@@ -57,6 +57,7 @@ class Tiles:
                 colliding = True
         
         return colliding
+        
     def correctedX(self, Px, Py, PrevX, PrevY):
         for tile in self.data['Tiles']:
             x = self.data['Tiles'][tile]['x']
@@ -71,15 +72,48 @@ class Tiles:
             b2 = x + 0.5 > PrevX - 0.5
             c2 = y - 0.5 < PrevY + 0.5
             d2 = y + 0.5 > PrevY - 0.5
-            
+
             res = 0
-            if a and not a2:
-                res = x-1
-                print("PR hit TL")
+            if a & b & c & d:
+                if a & b:
+                    if a and not a2:
+                        res = x-1
+                        print("PR hit TL")
+                    else:
+                        if b and not b2:
+                            res = x+1
+                            print("PL hit TR")
             else:
                 res = Px
-            
+
             return(res)
             
     def correctedY(self, Px, Py, PrevX, PrevY, surface, DebugEnabled):
-        print()
+       for tile in self.data['Tiles']:
+            x = self.data['Tiles'][tile]['x']
+            y = self.data['Tiles'][tile]['y']
+            # print(str(x) + ", " + str(y))
+            a = x - 0.5 < Px + 0.5
+            b = x + 0.5 > Px - 0.5
+            c = y - 0.5 < Py + 0.5
+            d = y + 0.5 > Py - 0.5
+
+            a2 = x - 0.5 < PrevX + 0.5
+            b2 = x + 0.5 > PrevX - 0.5
+            c2 = y - 0.5 < PrevY + 0.5
+            d2 = y + 0.5 > PrevY - 0.5
+
+            res = 0
+            if a & b & c & d:
+                if c & d:
+                    if d and not d2:
+                        res = y-1
+                        print("PR hit TL")
+                    else:
+                        if c and not c2:
+                            res = y+1
+                            print("PL hit TR")
+            else:
+                res = Py
+
+            return(res)
