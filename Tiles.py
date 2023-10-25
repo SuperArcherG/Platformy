@@ -12,9 +12,11 @@ class Tiles:
 
         self.Stone = pygame.transform.scale(pygame.image.load(
             PathToImages + "Stone.png"), ((self.screenwidth/16, self.screenheight/16)))
-
+        #self.Sand = pygame.transform.scale(pygame.image.load(
+        #    PathToImages + "Sand.png"), ((self.screenwidth/16, self.screenheight/16)))
+            
         self.middle = (screenwidth/2-Uo[0], screenheight/2-Uo[1])
-        self.sprites = [self.Stone]
+        self.sprites = [self.Stone] #, self.Sand
 
     def Show(self, surface, Px, Py, Ux, Uy, Uo):
         self.middleOffset = (self.middle[0] - self.Stone.get_size()
@@ -47,8 +49,7 @@ class Tiles:
             c2 = y - 0.5 < PrevY + 0.5
             d2 = y + 0.5 > PrevY - 0.5
 
-            if DebugEnabled:
-                print(str(a), str(b), str(c), str(d), str(a2), str(b2), str(c2), str(d2))
+
             if a & b & c & d:
                 if a & b:
                     e = 1
@@ -58,7 +59,8 @@ class Tiles:
         
         return colliding
         
-    def correctedX(self, Px, Py, PrevX, PrevY):
+    def correctedX(self, Px, Py, PrevX, PrevY, DebugEnabled):
+        res = 999
         for tile in self.data['Tiles']:
             x = self.data['Tiles'][tile]['x']
             y = self.data['Tiles'][tile]['y']
@@ -73,23 +75,31 @@ class Tiles:
             c2 = y - 0.5 < PrevY + 0.5
             d2 = y + 0.5 > PrevY - 0.5
 
-            res = 0
             if a & b & c & d:
                 if a & b:
                     if a and not a2:
                         res = x-1
-                        print("PR hit TL")
+                        #if DebugEnabled:
+                         #   print("PR hit TL")
                     else:
                         if b and not b2:
                             res = x+1
-                            print("PL hit TR")
-            else:
-                res = Px
+                           # if DebugEnabled:
+                             #   print("PL hit TR")
+            if DebugEnabled:
+                print(str(a), str(b), str(c), str(d), str(a2), str(b2), str(c2), str(d2))
+                
+        if res == 999:
+            res = Px
 
-            return(res)
+        if DebugEnabled:
+            print(str(res))
             
-    def correctedY(self, Px, Py, PrevX, PrevY, surface, DebugEnabled):
-       for tile in self.data['Tiles']:
+        return(res)
+            
+    def correctedY(self, Px, Py, PrevX, PrevY, DebugEnabled):
+        res = 999
+        for tile in self.data['Tiles']:
             x = self.data['Tiles'][tile]['x']
             y = self.data['Tiles'][tile]['y']
             # print(str(x) + ", " + str(y))
@@ -103,17 +113,23 @@ class Tiles:
             c2 = y - 0.5 < PrevY + 0.5
             d2 = y + 0.5 > PrevY - 0.5
 
-            res = 0
             if a & b & c & d:
                 if c & d:
-                    if d and not d2:
+                    if c and not c2:
                         res = y-1
-                        print("PR hit TL")
+                        #if DebugEnabled:
+                         #   print("PR hit TL")
                     else:
-                        if c and not c2:
+                        if d and not d2:
                             res = y+1
-                            print("PL hit TR")
-            else:
-                res = Py
+                            #if DebugEnabled:
+                             #   print("PL hit TR")
+            
+        if res == 999:
+            res = Py
 
-            return(res)
+        if DebugEnabled:
+            print(str(res) + "\n")
+
+            
+        return(res)

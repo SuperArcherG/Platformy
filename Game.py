@@ -4,6 +4,7 @@ import subprocess as sp
 import os
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+environ['XDG_RUNTIME_DIR'] = "/run/platformy"
 import sys
 import pygame
 import shutil
@@ -20,7 +21,7 @@ import subprocess
 import warnings
 import time
 import socket
-
+import requests
 
 
 RunLocalServer = False
@@ -37,11 +38,11 @@ def is_server_up(hostname, port):
         return False
 
 # Set the server address and port
-server_address = "https://play.superarcherg.com/"
+server_address = "play.superarcherg.com"
 server_port = 80
 
 # Check if the server is up
-#RunLocalServer = not is_server_up(server_address, server_port)
+RunLocalServer = not is_server_up(server_address, server_port)
 
 if RunLocalServer:
         
@@ -144,18 +145,16 @@ if RunLocalServer:
 
     ip = "http://"+str(get_local_ip()) + ":6050"
 else:
-    ip = "https://server.superarcherg.com:80"
-
-ip = "http://192.168.0.126:6050" #
+    ip = "http://play.superarcherg.com:80"
 
 DontPurge = True
 SoundSystem = True
 ShowIcon = True
 Debug = False
-LDM = True
+LDM = False
 
 buffer1 = 1
-buffer2 = 1
+buffer2 = 0
 
 pygame.init()  # initialize pygame
 
@@ -165,8 +164,8 @@ except:
  print("ERR Audio Mixer Failed to Initialize, Check That You Have the Proper Drivers Installed")
  SoundSystem = False
 
-print(os.name)
-print(platform.system())
+#print("OS: " + os.name)
+#print("System: " + platform.system())
 # and platform.system() == "Darwin"
 if not os.path.exists(os.getcwd() + "/assets"):
     pathToZip = os.getcwd() + "/assets.zip"
@@ -266,36 +265,50 @@ levelid = '0'
 
 
 def GetLevel(id):
-    levelid = str(id)
-    opener = urllib.request.URLopener()
-    opener.addheader('User-Agent', 'ARCHER_PROD/Platformy')
-    opener.addheader('id', str(id))
+    
     PATH_TO_LEVEL_DATA = os.getcwd() + '/tmp/' + str(id)
-    opener.retrieve(ip + '/info?id=' +
-                    str(id), PATH_TO_LEVEL_DATA + '.info')
-    opener.retrieve(ip + '/data?id=' +
-                    str(id), PATH_TO_LEVEL_DATA + '.data')
-    opener.retrieve(ip + '/owner?id=' +
-                    str(id), PATH_TO_LEVEL_DATA + '.owner')
+    
+    levelid = str(id)
+
+    with open(PATH_TO_LEVEL_DATA+".info", mode="wb") as file:
+        url =  ip + '/info?id=' + str(id)
+        response = requests.get(url, stream=True)
+        for chunk in response.iter_content(chunk_size=10 * 1024):
+            file.write(chunk)
+            
+    with open(PATH_TO_LEVEL_DATA+".data", mode="wb") as file:
+        url =  ip + '/data?id=' + str(id)
+        response = requests.get(url, stream=True)
+        for chunk in response.iter_content(chunk_size=10 * 1024):
+            file.write(chunk)
+            
+    with open(PATH_TO_LEVEL_DATA+".owner", mode="wb") as file:
+        url =  ip + '/owner?id=' + str(id)
+        response = requests.get(url, stream=True)
+        for chunk in response.iter_content(chunk_size=10 * 1024):
+            file.write(chunk)
+
+    with open(PATH_TO_LEVEL_DATA+".jpeg", mode="wb") as file:
+        url =  'http://play.superarcherg.com:80/icon?id=' + str(id)
+        response = requests.get(url, stream=True)
+        for chunk in response.iter_content(chunk_size=10 * 1024):
+            file.write(chunk)
+    
     text = open(PATH_TO_LEVEL_DATA+'.info', 'r')
     owner = open(PATH_TO_LEVEL_DATA+'.owner', 'r')
     jsonFile = json.loads(text.read())
     LEVEL_NAME = jsonFile['Name']
     LEVEL_OWNER = jsonFile['Creator']
-    opener.retrieve(ip + '/icon?id=' +
-                    str(id), PATH_TO_LEVEL_DATA + '.jpeg')
+
+            
     pygame.display.set_caption(
         LEVEL_NAME + " by " + LEVEL_OWNER + " Uploaded by " + owner.read() + ' ID:' + levelid)
+        
     img2 = pygame.image.load(
         PATH_TO_LEVEL_DATA + ".jpeg")
+        
     pygame.display.set_icon(img2)
     Tiles.UpdateData(open(PATH_TO_LEVEL_DATA + '.data', 'r'))
-    img2 = pygame.image.load(
-            PATH_TO_LEVEL_DATA + ".jpeg")
-    scale = 2
-    img2 = pygame.transform.scale(img2, (16*scale, 16*scale))
-    img2 = pygame.transform.scale(img2, (Ux*scale, Uy*scale))
-    img2.set_alpha(128)
     return levelid
 
 levelid = GetLevel(1)
@@ -339,13 +352,6 @@ while True:
         buffer2 += 1
         if buffer2 == 2:
          LDM = not LDM
-         if(not LDM):
-            img2 = pygame.image.load(
-            PATH_TO_LEVEL_DATA + ".jpeg")
-            scale = 2
-            img2 = pygame.transform.scale(img2, (16*scale, 16*scale))
-            img2 = pygame.transform.scale(img2, (Ux*scale, Uy*scale))
-            img2.set_alpha(128)
          buffer2 = 0
     U, D, L, R = old[pygame.K_UP] != pressedKeys[pygame.K_UP] and pressedKeys[
         pygame.K_UP] != 0, pressedKeys[pygame.K_DOWN], pressedKeys[pygame.K_LEFT], pressedKeys[pygame.K_RIGHT]
@@ -383,23 +389,22 @@ while True:
     # Draw calls
     # Set new Background Coordinates and update the screen
     screen.fill((0, 0, 0))
-    if not LDM:
-        Mountains.UpdateCoords(parralax, -Ox, Oy)
-        Mountains.Show(screen)
-    Floor.Show(screen, Px, Py, Ux, Uy)
-    Tiles.Show(screen, Px, Py, Ux, Uy, Uo)
+    
     t1,t2=prevXY
     colliding = Tiles.IsColliding(Px, Py, t1, t2, Debug)
     
     if colliding:
+        if not Grounded and SoundSystem:
+            land.play()
         Grounded = True
+
     
     ppx = 0
     ppy = 0
     
-    Cx = Tiles.correctedX(Px, Py, t1, t2)
-    #Cy = Tiles.correctedX(Px, Py, t1, t2)
-    Cy = Py
+    Cx = Tiles.correctedX(Px, Py, t1, t2, Debug)
+    Cy = Tiles.correctedY(Px, Py, t1, t2, Debug)
+    #Cy = Py
     
     if Cx != Px:
         Px = Cx
@@ -409,7 +414,7 @@ while True:
         ppx = Px
         
     if Cy != Py:
-        Px = Cy
+        Py = Cy
         ppy = prevXY[1]
         Vy = 0
     else:
@@ -417,13 +422,21 @@ while True:
     
     prevXY = (ppx, ppy)
 
-    # REWRITE
-    
+    if not LDM:
+        Mountains.UpdateCoords(parralax, -Ox, Oy)
+        Mountains.Show(screen)
+        Floor.Show(screen, Px, Py, Ux, Uy)
+    else:
+        screen.blit(font.render("LDM Enabled", 1, pygame.Color("coral")),(10, 0))
+        pygame.draw.line(color="green", surface=screen, start_pos=(0,screenheight/2+Uy/2+Py*Uy), end_pos=(screenwidth, screenheight/2+Uy/2+Py*Uy), width=1)
 
+    Tiles.Show(screen, Px, Py, Ux, Uy, Uo)
     Player.Show(screen, Vx, Vy, pressedKeys[pygame.K_DOWN])
+    
     if levelid != '0' and ShowIcon and not LDM:
         scale = 2
         screen.blit(img2, (screenwidth-Ux*scale, 0))
+    
     clock.tick(60)
 
     if Debug:
