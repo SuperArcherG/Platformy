@@ -4,7 +4,6 @@ import subprocess as sp
 import os
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-environ['XDG_RUNTIME_DIR'] = "/run/platformy"
 import sys
 import pygame
 import shutil
@@ -22,6 +21,7 @@ import warnings
 import time
 import socket
 import requests
+import wget
 
 
 RunLocalServer = False
@@ -39,7 +39,7 @@ def is_server_up(hostname, port):
 
 # Set the server address and port
 server_address = "play.superarcherg.com"
-server_port = 80
+server_port = 81
 
 # Check if the server is up
 RunLocalServer = not is_server_up(server_address, server_port)
@@ -145,9 +145,9 @@ if RunLocalServer:
 
     ip = "http://"+str(get_local_ip()) + ":6050"
 else:
-    ip = "http://play.superarcherg.com:80"
+    ip = "http://play.superarcherg.com:81"
 
-DontPurge = True
+DontPurge = False
 SoundSystem = True
 ShowIcon = True
 Debug = False
@@ -169,12 +169,16 @@ except:
 # and platform.system() == "Darwin"
 if not os.path.exists(os.getcwd() + "/assets"):
     pathToZip = os.getcwd() + "/assets.zip"
-    opener = urllib.request.URLopener()
-    opener.addheader('User-Agent', 'ARCHER_PROD/Platformy')
-    opener.retrieve(ip + '/assets', pathToZip)
+    
+    url =  ip+'/assets'
+    URL = url
+    response = wget.download(URL, pathToZip)
+
+
+            
     with zipfile.ZipFile(pathToZip, 'r') as zip_ref:
         zip_ref.extractall(os.getcwd())
-    os.remove(os.getcwd() + "/assets.zip")
+    os.remove("assets.zip")
 
 if not os.path.exists(os.getcwd() + "/tmp/"):
     os.mkdir(os.getcwd()+"/tmp/")
@@ -289,7 +293,7 @@ def GetLevel(id):
             file.write(chunk)
 
     with open(PATH_TO_LEVEL_DATA+".jpeg", mode="wb") as file:
-        url =  'http://play.superarcherg.com:80/icon?id=' + str(id)
+        url =  ip+'/icon?id=' + str(id)
         response = requests.get(url, stream=True)
         for chunk in response.iter_content(chunk_size=10 * 1024):
             file.write(chunk)
