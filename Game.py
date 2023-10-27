@@ -102,7 +102,7 @@ if RunLocalServer:
         else:
             print("No Servers Running")
     # Specify the port to kill processes on
-    port_to_kill = 6050
+    port_to_kill = 81
 
     # Kill the process running on the specified port
     kill_process_by_port(port_to_kill)
@@ -121,7 +121,7 @@ if RunLocalServer:
             print("ERROR IN GETTING IP")
             return None
         
-    ip = str(get_local_ip()) + ":6050"
+    ip = str(get_local_ip()) + ":81"
     
             
     script_path = os.getcwd()+"/RunServerLocal.py"
@@ -143,7 +143,7 @@ if RunLocalServer:
     time.sleep(3)
     print("Server has started")
 
-    ip = "http://"+str(get_local_ip()) + ":6050"
+    ip = "http://"+str(get_local_ip()) + ":81"
 else:
     ip = "http://play.superarcherg.com:81"
 
@@ -406,9 +406,7 @@ while True:
     ppx = 0
     ppy = 0
     
-    Cx = Tiles.correctedX(Px, Py, t1, t2, Debug)
-    Cy = Tiles.correctedY(Px, Py, t1, t2, Debug)
-    #Cy = Py
+    Cx,Cy = Tiles.correctedX(Px, Py, t1, t2, Debug)
     
     if Cx != Px:
         Px = Cx
