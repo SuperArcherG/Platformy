@@ -12,8 +12,8 @@ class Tiles:
 
         self.Stone = pygame.transform.scale(pygame.image.load(
             PathToImages + "Stone.png"), ((self.screenwidth/16, self.screenheight/16)))
-        #self.Sand = pygame.transform.scale(pygame.image.load(
-        #    PathToImages + "Sand.png"), ((self.screenwidth/16, self.screenheight/16)))
+        self.Sand = pygame.transform.scale(pygame.image.load(
+            PathToImages + "Sand.png"), ((self.screenwidth/16, self.screenheight/16)))
             
         self.middle = (screenwidth/2-Uo[0], screenheight/2-Uo[1])
         self.sprites = [self.Stone] #, self.Sand
@@ -32,44 +32,19 @@ class Tiles:
     def UpdateData(self, data):
         self.dat = data.read()
         self.data = json.loads(self.dat)
-
-    def IsColliding(self, Px, Py, PrevX, PrevY, DebugEnabled):
-        colliding = False
+        
+    def Corrected(self, Px, Py, PrevX, PrevY, DebugEnabled):
+        Grounded = False
+        wipx = Px
+        wipy = Py
         for tile in self.data['Tiles']:
             x = self.data['Tiles'][tile]['x']
             y = self.data['Tiles'][tile]['y']
             # print(str(x) + ", " + str(y))
-            a = x - 0.5 < Px + 0.5
-            b = x + 0.5 > Px - 0.5
-            c = y - 0.5 < Py + 0.5
-            d = y + 0.5 > Py - 0.5
-
-            a2 = x - 0.5 < PrevX + 0.5
-            b2 = x + 0.5 > PrevX - 0.5
-            c2 = y - 0.5 < PrevY + 0.5
-            d2 = y + 0.5 > PrevY - 0.5
-
-
-            if a & b & c & d:
-                if a & b:
-                    e = 1
-                if c & d:
-                    e = 1
-                colliding = True
-        
-        return colliding
-        
-    def correctedX(self, Px, Py, PrevX, PrevY, DebugEnabled):
-        res = 999
-        res2 = 999
-        for tile in self.data['Tiles']:
-            x = self.data['Tiles'][tile]['x']
-            y = self.data['Tiles'][tile]['y']
-            # print(str(x) + ", " + str(y))
-            a = x - 0.5 < Px + 0.5
-            b = x + 0.5 > Px - 0.5
-            c = y - 0.5 < Py + 0.5
-            d = y + 0.5 > Py - 0.5
+            a = x - 0.5 < wipx + 0.5
+            b = x + 0.5 > wipx - 0.5
+            c = y - 0.5 < wipy + 0.5
+            d = y + 0.5 > wipy - 0.5
 
             a2 = x - 0.5 < PrevX + 0.5
             b2 = x + 0.5 > PrevX - 0.5
@@ -79,37 +54,31 @@ class Tiles:
             if a & b & c & d:
                 if a & b:
                     if a and not a2:
-                        res = x-1
+                        wipx = x-1
                         #if DebugEnabled:
                          #   print("PR hit TL")
                     else:
                         if b and not b2:
-                            res = x+1
+                            wipx = x+1
                            # if DebugEnabled:
                              #   print("PL hit TR")
                 if c & d:
                     if c and not c2:
-                        res2 = y-1
+                        wipy = y-1
                         #if DebugEnabled:
-                         #   print("PR hit TL")
+                         #   print("PT hit TB")
                     else:
                         if d and not d2:
-                            res2 = y+1
+                            wipy = y+1
+                            Grounded = True
                             #if DebugEnabled:
-                             #   print("PL hit TR")
+                             #   print("PB hit TT")
             
             if DebugEnabled:
                 print(str(a), str(b), str(c), str(d), str(a2), str(b2), str(c2), str(d2))
-                
-        if res == 999:
-            res = Px
-
-        if res2 == 999:
-            res2 = Py
-
         if DebugEnabled:
-            print(str(res) + ", " + str(res2))
-        mixed = [res,res2]
+            print(str(wipx) + ", " + str(wipy))
+        mixed = [wipx,wipy,Grounded]
         
         return(mixed)
             

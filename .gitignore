@@ -64,3 +64,4 @@ tmp/*
 tmp/1.info
 tmp/1.jpeg
 dist/*
+.vscode/settings.json

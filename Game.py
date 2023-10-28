@@ -394,19 +394,15 @@ while True:
     # Set new Background Coordinates and update the screen
     screen.fill((0, 0, 0))
     
-    t1,t2=prevXY
-    colliding = Tiles.IsColliding(Px, Py, t1, t2, Debug)
-    
-    if colliding:
-        if not Grounded and SoundSystem:
-            land.play()
-        Grounded = True
-
+    t1,t2=prevXY  
     
     ppx = 0
     ppy = 0
     
-    Cx,Cy = Tiles.correctedX(Px, Py, t1, t2, Debug)
+    Cx,Cy,Grounded2 = Tiles.Corrected(Px, Py, t1, t2, Debug)
+    
+    if Grounded2:
+        Grounded = True
     
     if Cx != Px:
         Px = Cx
